@@ -15,6 +15,7 @@ namespace AzureSignToolClickOnce
             var ADTenantId = string.Empty;
             var clientId = string.Empty;
             var clientSecret = string.Empty;
+            var accessToken = string.Empty;
             var certName = string.Empty;
 
             foreach (string arg in args)
@@ -34,6 +35,9 @@ namespace AzureSignToolClickOnce
                     case "-p":
                     case "-path":
                         path = value;
+                        break;
+                    case "-azure-access-token":
+                        accessToken = value;
                         break;
                     case "-azure-key-vault-url":
                         keyVaultUrl = value;
@@ -70,20 +74,23 @@ namespace AzureSignToolClickOnce
                 Console.WriteLine($"Missing option -azure-key-vault-url");
                 return;
             }
-            if (string.IsNullOrEmpty(clientId))
+            if (string.IsNullOrEmpty(accessToken))
             {
-                Console.WriteLine($"Missing option -azure-key-vault-client-id");
-                return;
-            }
-            if (string.IsNullOrEmpty(clientSecret))
-            {
-                Console.WriteLine($"Missing option -azure-key-vault-client-secret");
-                return;
-            }
-            if (string.IsNullOrEmpty(ADTenantId))
-            {
-                Console.WriteLine($"Missing option -azure-key-vault-tenant-id");
-                return;
+                if (string.IsNullOrEmpty(clientId))
+                {
+                    Console.WriteLine($"Missing option -azure-key-vault-client-id");
+                    return;
+                }
+                if (string.IsNullOrEmpty(clientSecret))
+                {
+                    Console.WriteLine($"Missing option -azure-key-vault-client-secret");
+                    return;
+                }
+                if (string.IsNullOrEmpty(ADTenantId))
+                {
+                    Console.WriteLine($"Missing option -azure-key-vault-tenant-id");
+                    return;
+                }
             }
             if (string.IsNullOrEmpty(certName))
             {
@@ -105,7 +112,7 @@ namespace AzureSignToolClickOnce
             }
 
             var service = new AzureSignToolService();
-            service.Start(description, path, timeStampUrl, timeStampUrlRfc3161, keyVaultUrl, ADTenantId, clientId, clientSecret, certName);
+            service.Start(description, path, timeStampUrl, timeStampUrlRfc3161, keyVaultUrl, accessToken, ADTenantId, clientId, clientSecret, certName);
         }
     }
 }

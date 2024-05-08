@@ -1,4 +1,5 @@
-﻿using Azure.Identity;
+﻿using Azure.Core;
+using Azure.Identity;
 using Azure.Security.KeyVault.Certificates;
 using AzureSign.Core;
 using AzureSignToolClickOnce.Utils;
@@ -16,9 +17,18 @@ namespace AzureSignToolClickOnce.Services
     public class AzureSignToolService
     {
         private string _magetoolPath = @"C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8 Tools\mage.exe";
-        public void Start(string description, string path, string timeStampUrl, string timeStampUrlRfc3161, string keyVaultUrl, string tenantId, string clientId, string clientSecret, string certName)
+        public void Start(string description, string path, string timeStampUrl, string timeStampUrlRfc3161, string keyVaultUrl, string accessToken, string tenantId, string clientId, string clientSecret, string certName)
         {
-            var tokenCredential = new ClientSecretCredential(tenantId, clientId, clientSecret);
+            TokenCredential tokenCredential;
+            if (string.IsNullOrEmpty(accessToken))
+            {
+                tokenCredential = new ClientSecretCredential(tenantId, clientId, clientSecret);
+            }
+            else
+            {
+                tokenCredential = new AccessTokenCredential(accessToken);
+            }
+
             var client = new CertificateClient(vaultUri: new Uri(keyVaultUrl), credential: tokenCredential);
             var cert = client.GetCertificate(certName).Value;
             var certificate = new X509Certificate2(cert.Cer);
@@ -62,7 +72,7 @@ namespace AzureSignToolClickOnce.Services
             var filesToSign = new List<string>();
             var setupExe = files.Where(f => ".exe".Equals(Path.GetExtension(f), StringComparison.OrdinalIgnoreCase));
             filesToSign.AddRange(setupExe);
-            
+
             var manifestFile = files.SingleOrDefault(f => ".manifest".Equals(Path.GetExtension(f), StringComparison.OrdinalIgnoreCase));
             if (string.IsNullOrEmpty(manifestFile))
             {
