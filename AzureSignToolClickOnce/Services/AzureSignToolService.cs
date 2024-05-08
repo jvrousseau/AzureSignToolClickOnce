@@ -42,7 +42,6 @@ namespace AzureSignToolClickOnce.Services
 
             // MAM: Handle Deploy files. Get Rawfiles first.
             var rawfiles = Directory.GetFiles(path, "*.*").ToList();
-            rawfiles.AddRange(Directory.GetFiles(path + @"\Application Files", "*.*", SearchOption.AllDirectories));
             for (int i = 0; i < rawfiles.Count; i++)
             {
                 string file = rawfiles[i];
@@ -68,6 +67,8 @@ namespace AzureSignToolClickOnce.Services
                     files.Add(filename);
                 }
             }
+
+            files.ForEach(file => Console.WriteLine(Path.GetExtension(file) + " -- " + file));
 
             var filesToSign = new List<string>();
             var setupExe = files.Where(f => ".exe".Equals(Path.GetExtension(f), StringComparison.OrdinalIgnoreCase));
@@ -142,6 +143,8 @@ namespace AzureSignToolClickOnce.Services
             };
             Console.WriteLine($"Signing {signtool.StartInfo.FileName} {args}");
             signtool.Start();
+            var output = signtool.StandardOutput.ReadToEnd();
+            var error = signtool.StandardError.ReadToEnd();
             signtool.WaitForExit();
 
             if (signtool.ExitCode == 0)
@@ -152,8 +155,6 @@ namespace AzureSignToolClickOnce.Services
             }
             else
             {
-                var output = signtool.StandardOutput.ReadToEnd();
-                var error = signtool.StandardError.ReadToEnd();
                 Debug.WriteLine($"Mage Out {output}");
                 if (!string.IsNullOrWhiteSpace(error))
                 {
