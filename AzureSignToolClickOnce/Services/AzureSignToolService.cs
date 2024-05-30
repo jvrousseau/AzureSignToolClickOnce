@@ -42,6 +42,7 @@ namespace AzureSignToolClickOnce.Services
 
             // MAM: Handle Deploy files. Get Rawfiles first.
             var rawfiles = Directory.GetFiles(path, "*.*").ToList();
+            rawfiles.AddRange(Directory.GetFiles(path + @"\Application Files", "*.*", SearchOption.AllDirectories));
             for (int i = 0; i < rawfiles.Count; i++)
             {
                 string file = rawfiles[i];
@@ -69,7 +70,6 @@ namespace AzureSignToolClickOnce.Services
             }
 
             files.ForEach(file => Console.WriteLine(Path.GetExtension(file) + " -- " + file));
-
             var filesToSign = new List<string>();
             var setupExe = files.Where(f => ".exe".Equals(Path.GetExtension(f), StringComparison.OrdinalIgnoreCase));
             filesToSign.AddRange(setupExe);
