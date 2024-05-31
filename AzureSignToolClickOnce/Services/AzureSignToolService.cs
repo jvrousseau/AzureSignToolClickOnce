@@ -102,7 +102,8 @@ namespace AzureSignToolClickOnce.Services
 
             foreach (var f in clickOnceFilesToSign)
             {
-                fileArgs = $@"-update ""{f}"" {args} -appm ""{manifestFile}""";
+                //var codebasePath = manifestFile.Replace($"{path}\\", "");
+                fileArgs = $@"-update ""{f}"" {args} -appm ""{manifestFile}"""; //REMOVED FOR TESTING: -appc ""{codebasePath}""
                 if (!RunMageTool(fileArgs, f, rsa, certificate, timeStampUrl))
                 {
                     throw new Exception($"Could not sign {f}");

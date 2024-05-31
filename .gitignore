@@ -2,6 +2,9 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
+.DS_Store
+**/.DS_Store
+/AzureSignToolClickOnce/bin/**
 /AzureSignToolClickOnce/bin/Debug
 /AzureSignToolClickOnce/bin/Release
 /AzureSignToolClickOnce/obj
